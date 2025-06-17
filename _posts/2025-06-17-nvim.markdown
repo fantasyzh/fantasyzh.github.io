@@ -1,0 +1,21 @@
+---
+layout: post
+title:  "Neovim 配置"
+date:   2025-06-17 15:32:00 +0800
+categories: vim
+---
+
+常用功能：
+
+<C-p>: 反复粘贴上一次复制的内容，简单p使用的是默认寄存器，内容会被上次覆盖的内容替换掉。配合<C-v>或<Shift-v>模式选中然后<C-p>粘贴替换。
+
+gb: 切换打开的文件buffer, 自动ls，可以直接输入buffer编号，或输入部分文件名并TAB补全。
+
+{% highlight lua %}
+  local keyset = vim.keymap.set
+  local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
+
+  keyset('n', 'gb', ':ls<CR>:b<Space>')
+  keyset('v', '<C-p>', '"0p')
+{% endhighlight %}
+
