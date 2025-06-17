@@ -5,11 +5,46 @@ date:   2025-06-17 15:32:00 +0800
 categories: vim
 ---
 
-常用功能：
+## 基础配置
 
-<C-p>: 反复粘贴上一次复制的内容，简单p使用的是默认寄存器，内容会被上次覆盖的内容替换掉。配合<C-v>或<Shift-v>模式选中然后<C-p>粘贴替换。
+```
+vim.opt.fileencodings='utf-8'
+vim.opt.sw=4
+vim.opt.ts=4
+vim.opt.expandtab=true
+vim.opt.smarttab=true
+vim.opt.autoindent=true
 
-gb: 切换打开的文件buffer, 自动ls，可以直接输入buffer编号，或输入部分文件名并TAB补全。
+vim.cmd [[
+  filetype plugin indent on
+  autocmd FileType scala set ft=java
+  autocmd FileType c,cpp set cinoptions=:0,g0
+  autocmd FileType java set sw=2 ts=2
+]]
+
+```
+
+```
+# .editorconfig
+root=true
+[*.{h,cpp,py}]
+trim_trailing_whitespace=true
+```
+
+## 基础插件
+
+### lastplace
+
+恢复文件上次的光标位置
+
+<https://github.com/farmergreg/vim-lastplace>
+
+
+## 便利快捷键
+
+`<C-p>`: 反复粘贴上一次复制的内容，简单p使用的是默认寄存器，内容会被上次覆盖的内容替换掉。配合`<C-v>`或`<Shift-v>`模式选中然后`<C-p>`粘贴替换。
+
+`gb`: 切换打开的文件buffer, 自动ls，可以直接输入buffer编号，或输入部分文件名并TAB补全。
 
 {% highlight lua %}
   local keyset = vim.keymap.set
@@ -19,3 +54,45 @@ gb: 切换打开的文件buffer, 自动ls，可以直接输入buffer编号，或
   keyset('v', '<C-p>', '"0p')
 {% endhighlight %}
 
+## CoC 自动补全 
+
+### 安装CoC
+
+```
+mkdir -p ~/.local/share/nvim/site/pack/coc/start
+git clone --branch release https://github.com/neoclide/coc.nvim.git --depth=1
+```
+
+### 配置nvim
+
+```
+# 否则代码错误提示出现或消失时，窗口左侧提示条也会出现小时，很难受
+vim.opt.signcolumn = "yes"
+
+vim.cmd('autocmd FileType c,cpp set tagfunc=CocTagFunc')
+
+# 还需要.bashrc/.zshrc 里也有node PATH
+vim.g.coc_node_path='/path/to/bin/node'
+```
+
+### 配置CoC
+
+```
+:CocConfig
+{
+  "semanticTokens.enable": true,
+  "suggest.noselect": true,
+  "coc-config-npm-binPath": "/path/to/node/bin/npm",
+  "clangd.path": "/path/to/clang/bin/clangd"
+}
+```
+
+### 安装 clangd LSP
+
+```
+:CocInstall coc-clangd
+```
+
+### 更多nvim 配置
+
+<https://github.com/neoclide/coc.nvim?tab=readme-ov-file#example-lua-configuration>
