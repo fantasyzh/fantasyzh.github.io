@@ -8,15 +8,19 @@ date:   2025-06-30 15:32:00 +0800
 
 基于jemalloc 5.3 <https://github.com/facebook/jemalloc>  (was jemalloc/jemalloc before)
 
-**arena**: 管理自己的extents，每个线程绑定到固定的arena。Arena之间相互独立，隔离锁竞争。
+**arena**:
+ * 管理自己的extents，每个线程绑定到固定的arena。Arena之间相互独立，隔离锁竞争。
 
-**extent**: 从OS分配到的大块内存，是若干个page的内存段。或者用于划分成多个small size class，此时叫slab，或者用于单个large size class的分配。 
+**extent**:
+ * 从OS分配到的大块内存，是若干个page的内存段。或者用于划分成多个small size class，此时叫slab，或者用于单个large size class的分配。 
 
-**slab**: 对用于small size class的extent的称呼。大小根据所属size class是固定的，里面划分成size class大小的对象，叫region，也就是一个slab的region个数是固定的。
+**slab**:
+ * 对用于small size class的extent的称呼。大小根据所属size class是固定的，里面划分成size class大小的对象，叫region，也就是一个slab的region个数是固定的。
 
-**bin**: 在arena用于管理small size class的slabs，每个size class一个。
+**bin**:
+ * 在arena用于管理small size class的slabs，每个size class一个。
 
-**size class**: 
+**size class**:
  * size 的值域划分为一系列group，group的边界是2的幂, 比如64 / 128 / 256 , 每个group的大小就等于group起点`base`, group等分为`SC_NGROUP`个delta。
  * "Small" size classes mean those that are allocated out of bins, which is the same as those that are slab allocated.
  * "Large" size classes are those that are not small. The cutoff for counting as large is page size * group size.
@@ -30,7 +34,10 @@ date:   2025-06-30 15:32:00 +0800
  * 未公开的 `slab_sizes` 配置，格式: `<size class reg_size range, in [start-end]>:pages`, 比如: `MALLOC_CONF="slab_sizes:1-4096:17|100-200:1|128-128:2"`
  * slab的 region 个数上限: `SC_SLAB_MAXREGS` `= 4KB / 8 = 512` , 这是 slab 的 bitmap 的容量。
 
-**purge/decay/muzzy**: purge空闲内存释放， decay是平滑释放速率，muzzy是2阶段purge: `MADV_FREE`(让OS按需回收物理page) 和 `MADV_DONTNEED` (直接释放物理page) 。
+**purge/decay/muzzy**:
+ * purge空闲内存释放 
+ * decay是平滑释放速率
+ * muzzy是2阶段purge: `MADV_FREE`(让OS按需回收物理page) 和 `MADV_DONTNEED` (直接释放物理page) 。
 
 ## 理解jemalloc stats
 
